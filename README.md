@@ -163,8 +163,8 @@ All tables have Row Level Security (RLS) enabled with `anon + authenticated` pol
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/medicore-hms.git
-cd medicore-hms
+git clone https://github.com/Ziauddin9/smart-hospital-mangment
+cd smart-hospital-mangment
 
 # 2. Install dependencies
 npm install
