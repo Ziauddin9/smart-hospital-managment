@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws --version
+      - ACCOUNT_ID=245987718650
+      - REGION=ap-south-2
+      - REPOSITORY_URI=245987718650.dkr.ecr.ap-south-2.amazonaws.com/smart-hospital-management
+      - aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $REPOSITORY_URI
+
+  build:
+    commands:
+      - echo Build started
+      - docker build -t smart-hospital-management .
+      - docker tag smart-hospital-management:latest $REPOSITORY_URI:latest
+
+  post_build:
+    commands:
+      - echo Pushing image...
+      - docker push $REPOSITORY_URI:latest
