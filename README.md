@@ -19,8 +19,6 @@ A full-featured, production-ready Hospital Management System built with React, T
 - [Infrastructure as Code (Terraform)](#infrastructure-as-code-terraform)
 - [Monitoring & Observability](#monitoring--observability)
 - [DevOps Modules Covered](#devops-modules-covered)
-- [Contributing](#contributing)
-- [License](#license)
 
 ---
 
