@@ -1,6 +1,6 @@
 # MediCore HMS — Smart Hospital Management System
 
-A full-featured, production-ready Hospital Management System built with React, TypeScript, Tailwind CSS, and Supabase. Designed as a capstone project for an AWS & DevOps course, covering CI/CD, containerization, infrastructure as code, and cloud deployment.
+A full-featured, production-ready Hospital Management System built with React, TypeScript, Tailwind CSS, and Supabase.
 
 ---
 
