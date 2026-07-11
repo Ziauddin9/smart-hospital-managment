@@ -2,10 +2,11 @@ pipeline {
     agent any
 
     tools {
-        nodejs 'NodeJS-26'
+        nodejs 'NodeJS-24'
     }
 
     stages {
+
         stage('Checkout') {
             steps {
                 checkout scm
@@ -31,11 +32,20 @@ pipeline {
                 sh 'npm run build'
             }
         }
+
+        stage('Archive Build') {
+            steps {
+                archiveArtifacts artifacts: 'dist/**', fingerprint: true
+            }
+        }
     }
 
     post {
         success {
-            archiveArtifacts artifacts: 'dist/**', fingerprint: true
+            echo '✅ Build completed successfully!'
+        }
+        failure {
+            echo '❌ Build failed!'
         }
     }
 }
