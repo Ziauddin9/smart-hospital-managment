@@ -476,4 +476,3 @@ The following features are planned for future releases.
 # Project Status
 
 MediCore HMS is under active development. Additional features and improvements will continue to be added in future updates.
-Webhook Test
