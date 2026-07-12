@@ -5,8 +5,9 @@ pipeline {
         nodejs 'NodeJS-24'
     }
 
-    options {
-        timestamps()
+    environment {
+        AWS_DEFAULT_REGION = 'ap-south-2'
+        S3_BUCKET = 'smart-hospital-build-artifacts-ziauddin'
     }
 
     stages {
@@ -14,19 +15,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Verify Environment') {
-            steps {
-                sh '''
-                    echo "===== Environment ====="
-                    pwd
-                    ls -la
-                    node -v
-                    npm -v
-                    git --version
-                '''
             }
         }
 
@@ -47,19 +35,28 @@ pipeline {
                 archiveArtifacts artifacts: 'dist/**', fingerprint: true
             }
         }
+
+        stage('Upload to S3') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-s3'
+                ]]) {
+                    sh '''
+                        aws s3 sync dist/ s3://$S3_BUCKET --delete
+                    '''
+                }
+            }
+        }
     }
 
     post {
         success {
-            echo '✅ Build completed successfully.'
+            echo 'Build completed and uploaded to S3.'
         }
 
         failure {
-            echo '❌ Build failed.'
-        }
-
-        always {
-            cleanWs()
+            echo 'Build failed.'
         }
     }
 }
