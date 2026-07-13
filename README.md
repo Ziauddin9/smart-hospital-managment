@@ -639,40 +639,50 @@ This automates the provisioning and updating of AWS infrastructure.
 ---
 
 ## CI/CD Workflow
+
 Developer
-     │
-     ▼
+      │
+      ▼
+Git Push
+      │
+      ▼
 GitHub Repository
-     │
-     ▼
+      │
+      ▼
 Jenkins
-     │
-     ├───────────────┐
-     │               │
-     ▼               ▼
-Build React      Terraform
-Application         Apply
-     │
-     ▼
-Upload dist → Amazon S3
-     │
-     ▼
-Docker Build
-     │
-     ▼
-Amazon ECR
-     │
-     ▼
-Deploy Container
-     │
-     ▼
-Amazon EC2
-     │
-     ▼
+      │
+      ▼
+Checkout Source Code
+      │
+      ▼
+Install Dependencies
+      │
+      ▼
+Build React Application
+      │
+      ▼
+Upload Production Build to Amazon S3
+      │
+      ▼
+Build Docker Image
+      │
+      ▼
+Login to Amazon ECR
+      │
+      ▼
+Push Docker Image to Amazon ECR
+      │
+      ▼
+Stop Existing Container
+      │
+      ▼
+Start New Docker Container
+      │
+      ▼
 CloudWatch Monitoring
-     │
-     ▼
-Amazon SNS
+      │
+      ▼
+Amazon SNS Alerts
 
 ---
 

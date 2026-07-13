@@ -10,6 +10,7 @@ pipeline {
         S3_BUCKET = 'smart-hospital-build-artifacts-ziauddin'
 
         IMAGE_NAME = 'smart-hospital'
+        CONTAINER_NAME = 'smart-hospital'
         ECR_REPOSITORY = '245987718650.dkr.ecr.ap-south-2.amazonaws.com/smart-hospital'
     }
 
@@ -48,7 +49,9 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                sh '''
+                    docker build -t $IMAGE_NAME:latest .
+                '''
             }
         }
 
@@ -59,7 +62,8 @@ pipeline {
                     credentialsId: 'aws-s3'
                 ]]) {
                     sh '''
-                        aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 245987718650.dkr.ecr.ap-south-2.amazonaws.com
+                        aws ecr get-login-password --region $AWS_DEFAULT_REGION \
+                        | docker login --username AWS --password-stdin 245987718650.dkr.ecr.ap-south-2.amazonaws.com
                     '''
                 }
             }
@@ -77,25 +81,54 @@ pipeline {
         stage('Deploy Docker Container') {
             steps {
                 sh '''
-                    docker stop smart-hospital || true
-                    docker rm smart-hospital || true
+                    echo "Stopping existing container..."
+
+                    docker stop $CONTAINER_NAME || true
+                    docker rm $CONTAINER_NAME || true
+
+                    echo "Removing any container using port 8081..."
+
+                    docker ps -q --filter publish=8081 | xargs -r docker stop
+                    docker ps -aq --filter publish=8081 | xargs -r docker rm
+
+                    echo "Starting new container..."
 
                     docker run -d \
-                        --name smart-hospital \
+                        --name $CONTAINER_NAME \
+                        --restart unless-stopped \
                         -p 8081:80 \
-                        $IMAGE_NAME
+                        $IMAGE_NAME:latest
+
+                    docker ps
                 '''
             }
         }
     }
 
     post {
+
         success {
-            echo '✅ Application built, uploaded to S3, pushed to ECR, and deployed successfully.'
+            echo '✅ Build completed successfully.'
+            echo '✅ React application built.'
+            echo '✅ Production build uploaded to Amazon S3.'
+            echo '✅ Docker image pushed to Amazon ECR.'
+            echo '✅ Docker container deployed successfully.'
         }
 
         failure {
             echo '❌ Pipeline failed.'
+
+            sh '''
+                echo "Docker Containers:"
+                docker ps -a || true
+
+                echo "Docker Images:"
+                docker images || true
+            '''
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
